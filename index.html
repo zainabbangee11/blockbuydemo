@@ -1,0 +1,1269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>BlockBuy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --g950:#0D2818;--g900:#14532D;--g800:#166534;--g700:#15803D;
+  --g600:#16A34A;--g500:#22C55E;--g400:#4ADE80;--g300:#86EFAC;
+  --g200:#BBF7D0;--g100:#DCFCE7;--g50:#F0FDF4;
+  --white:#fff;--gr50:#F9FAFB;--gr100:#F3F4F6;--gr200:#E5E7EB;--gr300:#D1D5DB;
+  --gr400:#9CA3AF;--gr500:#6B7280;--gr600:#4B5563;--gr700:#374151;--gr800:#1F2937;--gr900:#111827;
+  --amber:#F59E0B;--amber-l:#FEF3C7;
+  --r:12px;--r-lg:16px;--r-xl:20px;
+  --safe-b:env(safe-area-inset-bottom,0px);
+  --font:'Inter',system-ui,-apple-system,sans-serif;
+}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{
+  font-family:var(--font);color:var(--gr800);
+  background:var(--gr50);
+  line-height:1.5;-webkit-font-smoothing:antialiased;
+  padding-bottom:calc(80px + var(--safe-b));
+  max-width:430px;margin:0 auto;
+  overflow-x:hidden;
+}
+a{color:var(--g700);text-decoration:none}
+button{font-family:inherit;cursor:pointer;border:none;background:none}
+img{max-width:100%;display:block}
+
+/* ── Top bar ── */
+.top-bar{
+  background:var(--white);
+  border-bottom:1px solid var(--gr100);
+  position:sticky;top:0;z-index:100;
+  padding:0 20px;display:flex;align-items:center;justify-content:space-between;
+  height:56px;
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  background:rgba(255,255,255,.92);
+}
+.logo{font-weight:800;font-size:1.05rem;color:var(--gr900);display:flex;align-items:center;gap:8px;letter-spacing:-.02em;position:relative;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.logo-icon{
+  width:28px;height:28px;
+  background:var(--g800);border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  color:var(--white);font-size:.65rem;font-weight:800;
+}
+.live-badge{position:absolute;top:-4px;right:-32px;background:#EF4444;color:#fff;font-size:.45rem;font-weight:700;padding:2px 5px;border-radius:4px;letter-spacing:.04em;animation:pulse 2s infinite;display:none}
+.live-badge.show{display:block}
+.top-bar-right{display:flex;align-items:center;gap:10px}
+.top-hall{font-size:.65rem;color:var(--gr400);font-weight:500;text-align:right;line-height:1.35}
+.top-hall strong{color:var(--gr800);display:block;font-weight:600;font-size:.68rem}
+.avatar-dot{width:32px;height:32px;border-radius:50%;background:var(--g100);display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:700;color:var(--g800)}
+
+/* ── Bottom nav ── */
+.bottom-nav{
+  position:fixed;bottom:0;left:0;right:0;
+  background:rgba(255,255,255,.96);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-top:1px solid var(--gr100);
+  display:flex;justify-content:space-around;align-items:center;
+  height:calc(56px + var(--safe-b));
+  padding-bottom:var(--safe-b);
+  z-index:100;max-width:430px;margin:0 auto;
+}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:.58rem;font-weight:500;color:var(--gr400);padding:8px 16px;border-radius:8px;transition:color .15s;letter-spacing:.01em}
+.nav-item.active{color:var(--g700)}
+.nav-icon{width:22px;height:22px;display:flex;align-items:center;justify-content:center}
+.nav-icon svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+/* ── Savings banner ── */
+.savings-banner{
+  background:var(--g950);
+  color:var(--white);padding:20px;margin:16px 20px 0;border-radius:var(--r-lg);
+}
+.savings-title{font-size:.6rem;font-weight:600;color:var(--g300);margin-bottom:14px;text-transform:uppercase;letter-spacing:.1em;opacity:.7}
+.savings-row{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;text-align:center}
+.savings-num{font-size:1.1rem;font-weight:800;color:var(--white);letter-spacing:-.02em}
+.savings-label{font-size:.55rem;color:var(--g300);font-weight:500;margin-top:2px;opacity:.8}
+
+/* ── Premium banner ── */
+.premium-banner{
+  margin:10px 20px 0;padding:14px 16px;
+  background:var(--white);border:1px solid var(--gr100);border-radius:var(--r);
+  display:flex;align-items:center;justify-content:space-between;cursor:pointer;
+  transition:transform .1s;
+}
+.premium-banner:active{transform:scale(.98)}
+.premium-left{display:flex;align-items:center;gap:10px}
+.premium-icon{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,#F59E0B,#F97316);display:flex;align-items:center;justify-content:center;font-size:.7rem}
+.premium-text{font-size:.72rem;font-weight:600;color:var(--gr800)}
+.premium-text span{display:block;font-size:.58rem;font-weight:400;color:var(--gr400)}
+.premium-arrow{font-size:.75rem;color:var(--gr300)}
+
+/* ── Activity feed ── */
+.activity-feed{display:flex;gap:8px;padding:12px 20px 0;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.activity-feed::-webkit-scrollbar{display:none}
+.activity-card{
+  flex:0 0 auto;display:flex;align-items:center;gap:8px;
+  background:var(--white);border:1px solid var(--gr100);border-radius:var(--r);
+  padding:8px 12px;animation:fadeInRight .3s ease;
+}
+.activity-avatar{width:22px;height:22px;border-radius:50%;background:var(--g100);display:flex;align-items:center;justify-content:center;font-size:.5rem;font-weight:700;color:var(--g800);flex-shrink:0}
+.activity-text{font-size:.6rem;color:var(--gr600);white-space:nowrap}
+.activity-text strong{color:var(--gr800);font-weight:600}
+.activity-time{font-size:.5rem;color:var(--gr300);white-space:nowrap}
+@keyframes fadeInRight{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+
+/* ── Countdown strip ── */
+.countdown-strip{display:flex;gap:8px;padding:14px 20px 0;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.countdown-strip::-webkit-scrollbar{display:none}
+.cd-card{
+  flex:0 0 auto;background:var(--white);
+  border:1px solid var(--gr100);border-radius:var(--r);
+  padding:10px 14px;display:flex;align-items:center;gap:10px;
+}
+.cd-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.cd-dot.amber{background:var(--amber)}
+.cd-dot.green{background:var(--g500);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.cd-info{white-space:nowrap}
+.cd-label{font-size:.6rem;color:var(--gr400);font-weight:500}
+.cd-time{font-size:.78rem;font-weight:700;color:var(--gr800);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+
+/* ── Section ── */
+.section{padding:22px 0 0}
+.section-head{padding:0 20px;margin-bottom:12px}
+.section-title{font-size:.95rem;font-weight:700;color:var(--gr900);letter-spacing:-.02em}
+.section-sub{font-size:.7rem;color:var(--gr400);margin-top:2px;line-height:1.4}
+
+/* ── Filter chips ── */
+.filter-row{display:flex;gap:6px;padding:0 20px;margin-bottom:12px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.filter-row::-webkit-scrollbar{display:none}
+.filter-chip{
+  flex:0 0 auto;padding:6px 14px;border-radius:50px;font-size:.65rem;font-weight:500;
+  color:var(--gr500);background:var(--white);border:1px solid var(--gr100);
+  transition:all .2s;white-space:nowrap;
+}
+.filter-chip.active{background:var(--gr900);color:var(--white);border-color:var(--gr900)}
+
+/* ── Product Grid ── */
+.product-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:0 20px}
+.product-card{
+  background:var(--white);border-radius:var(--r-lg);
+  border:1px solid var(--gr100);overflow:hidden;
+  position:relative;display:flex;flex-direction:column;
+  transition:transform .15s,box-shadow .15s;
+  animation:fadeInUp .35s ease both;
+}
+.product-card:nth-child(1){animation-delay:0s}
+.product-card:nth-child(2){animation-delay:.05s}
+.product-card:nth-child(3){animation-delay:.1s}
+.product-card:nth-child(4){animation-delay:.15s}
+.product-card:nth-child(5){animation-delay:.2s}
+.product-card:nth-child(6){animation-delay:.25s}
+.product-card:nth-child(7){animation-delay:.3s}
+.product-card:nth-child(8){animation-delay:.35s}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.product-card:active{transform:scale(.98)}
+.product-card.unlocked{border-color:var(--g200)}
+.product-card.promoted{}
+
+.badge{position:absolute;top:8px;z-index:2;padding:3px 8px;border-radius:50px;font-size:.52rem;font-weight:600;letter-spacing:.02em}
+.badge-promoted{left:8px;background:var(--gr800);color:var(--white)}
+.badge-unlocked{right:8px;background:var(--g800);color:var(--white)}
+
+.product-img-wrap{width:100%;height:110px;overflow:hidden;position:relative;background:var(--gr50)}
+.product-img-wrap img{width:100%;height:100%;object-fit:contain;padding:12px}
+.img-fallback{display:none;width:100%;height:100%;align-items:center;justify-content:center;background:var(--g50);color:var(--g800);font-weight:600;font-size:.72rem;text-align:center;padding:12px}
+.product-img-wrap.img-error img{display:none}
+.product-img-wrap.img-error .img-fallback{display:flex}
+
+.product-info{padding:10px 12px 12px;flex:1;display:flex;flex-direction:column}
+.product-name{font-size:.75rem;font-weight:600;color:var(--gr800);margin-bottom:1px;line-height:1.3}
+.product-unit{font-size:.6rem;color:var(--gr400);margin-bottom:6px}
+.product-pricing{display:flex;align-items:baseline;gap:4px;margin-bottom:8px;flex-wrap:wrap}
+.price-now{font-size:.85rem;font-weight:700;color:var(--gr900);letter-spacing:-.02em}
+.price-was{font-size:.62rem;color:var(--gr300);text-decoration:line-through}
+.price-save{font-size:.52rem;color:var(--g700);font-weight:600;background:transparent;padding:0}
+
+.progress-section{margin-top:auto}
+.progress-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.progress-label{font-size:.6rem;color:var(--gr400);font-weight:500}
+.progress-count{font-size:.62rem;font-weight:700;color:var(--gr600);font-variant-numeric:tabular-nums}
+.progress-track{width:100%;height:4px;background:var(--gr100);border-radius:2px;overflow:hidden;margin-bottom:4px}
+.progress-fill{height:100%;border-radius:2px;transition:width .4s cubic-bezier(.4,0,.2,1)}
+.progress-fill.low{background:var(--gr300)}
+.progress-fill.mid{background:var(--g400)}
+.progress-fill.high{background:var(--g500)}
+.progress-fill.full{background:var(--g600)}
+.progress-fill.glow{box-shadow:0 0 8px var(--g400)}
+.progress-status{font-size:.58rem;margin-bottom:8px;font-weight:500}
+.progress-status.needed{color:var(--gr400)}
+.progress-status.close{color:var(--amber)}
+.progress-status.done{color:var(--g700)}
+.case-number{font-size:.5rem;color:var(--gr300);font-weight:500;margin-bottom:2px}
+
+.btn-add{
+  width:100%;padding:8px;border-radius:var(--r);
+  font-size:.7rem;font-weight:600;transition:all .15s;
+  letter-spacing:-.01em;
+}
+.btn-add.active{background:var(--gr900);color:var(--white)}
+.btn-add.active:hover{background:var(--gr800)}
+.btn-add.active:active{transform:scale(.97)}
+.btn-add.closer{background:var(--amber);color:var(--white)}
+.btn-add.closer:active{transform:scale(.97)}
+.btn-add.filled{background:var(--gr50);color:var(--gr400);cursor:default;border:1px solid var(--gr100)}
+.btn-add:focus-visible{outline:2px solid var(--g600);outline-offset:2px}
+
+/* ── Empty state ── */
+.empty-state{padding:40px 20px;text-align:center;grid-column:1/-1}
+.empty-state-icon{font-size:2rem;margin-bottom:8px;opacity:.3}
+.empty-state-text{font-size:.78rem;color:var(--gr400);margin-bottom:12px}
+.empty-state-btn{font-size:.7rem;font-weight:600;color:var(--g700);background:var(--g50);padding:8px 20px;border-radius:50px;border:1px solid var(--g200)}
+
+/* ── Subscription ── */
+.sub-list{padding:0 20px;display:flex;flex-direction:column;gap:8px}
+.sub-item{
+  background:var(--white);border-radius:var(--r-lg);padding:14px;
+  border:1px solid var(--gr100);transition:all .15s;
+}
+.sub-item.active{border-color:var(--g200);background:var(--g50)}
+.sub-item-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.sub-item-name{font-size:.75rem;font-weight:600;color:var(--gr800)}
+.sub-toggle{width:44px;height:24px;border-radius:12px;background:var(--gr200);position:relative;cursor:pointer;transition:background .25s}
+.sub-toggle.on{background:var(--g500)}
+.sub-toggle-knob{width:20px;height:20px;border-radius:50%;background:var(--white);position:absolute;top:2px;left:2px;transition:left .25s cubic-bezier(.4,0,.2,1);box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.sub-toggle.on .sub-toggle-knob{left:22px}
+.sub-item-config{display:flex;align-items:center;gap:8px}
+.sub-qty{display:flex;align-items:center;border:1px solid var(--gr200);border-radius:var(--r);overflow:hidden}
+.sub-qty button{width:30px;height:30px;display:flex;align-items:center;justify-content:center;font-size:.85rem;color:var(--gr600);background:var(--white);transition:background .1s}
+.sub-qty button:active{background:var(--gr100)}
+.sub-qty span{width:28px;height:30px;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:600;border-left:1px solid var(--gr200);border-right:1px solid var(--gr200)}
+.sub-freq{padding:6px 10px;border:1px solid var(--gr200);border-radius:var(--r);font-size:.65rem;font-weight:500;color:var(--gr600);background:var(--white);font-family:var(--font)}
+.sub-note{font-size:.6rem;color:var(--gr400);margin-top:6px}
+
+/* ── Vote ── */
+.vote-list{padding:0 20px;display:flex;flex-direction:column;gap:6px}
+.vote-item{
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--white);padding:12px 14px;border-radius:var(--r);
+  border:1px solid var(--gr100);
+  transition:transform .1s;
+}
+.vote-item:active{transform:scale(.99)}
+.vote-item-left{display:flex;align-items:center;gap:10px;min-width:0}
+.vote-item-name{font-size:.75rem;font-weight:600;color:var(--gr800);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vote-item-sub{font-size:.6rem;color:var(--gr400)}
+.vote-count{font-size:.68rem;font-weight:700;color:var(--gr700);min-width:28px;text-align:center;flex-shrink:0}
+.btn-vote{
+  padding:6px 14px;border-radius:50px;font-size:.65rem;font-weight:600;
+  background:var(--gr100);color:var(--gr600);transition:all .15s;flex-shrink:0;
+}
+.btn-vote:active{transform:scale(.95)}
+.btn-vote.voted{background:var(--gr800);color:var(--white)}
+.premium-upsell{font-size:.55rem;color:var(--amber);font-weight:500;margin-top:4px;padding:0 20px}
+.suggest-row{padding:0 20px;margin-top:10px;display:flex;gap:8px}
+.suggest-row input{flex:1;padding:10px 14px;border:1.5px solid var(--gr200);border-radius:var(--r);font-size:.75rem;outline:none;font-family:var(--font);color:var(--gr800)}
+.suggest-row input::placeholder{color:var(--gr300)}
+.suggest-row input:focus{border-color:var(--g500);box-shadow:0 0 0 3px rgba(34,197,94,.1)}
+.suggest-row button{padding:10px 18px;border-radius:var(--r);background:var(--gr900);color:var(--white);font-size:.7rem;font-weight:600;white-space:nowrap}
+
+/* ── Referral ── */
+.referral-card{
+  margin:0 20px;padding:20px;
+  background:var(--white);border:1px solid var(--gr100);border-radius:var(--r-lg);
+}
+.referral-title{font-size:.82rem;font-weight:700;color:var(--gr900);margin-bottom:4px}
+.referral-sub{font-size:.68rem;color:var(--gr400);margin-bottom:14px;line-height:1.4}
+.referral-code-wrap{display:flex;gap:8px;margin-bottom:12px}
+.referral-code{flex:1;padding:10px 14px;background:var(--gr50);border:1.5px dashed var(--gr200);border-radius:var(--r);font-size:.82rem;font-weight:700;color:var(--gr800);letter-spacing:.04em;text-align:center;font-family:var(--font)}
+.referral-copy{padding:10px 16px;background:var(--gr900);color:var(--white);border-radius:var(--r);font-size:.7rem;font-weight:600;white-space:nowrap}
+.referral-copy:active{transform:scale(.97)}
+.referral-share{width:100%;padding:10px;background:var(--g50);color:var(--g700);border:1px solid var(--g200);border-radius:var(--r);font-size:.7rem;font-weight:600;text-align:center;margin-bottom:10px}
+.referral-share:active{transform:scale(.97)}
+.referral-progress{font-size:.6rem;color:var(--gr400)}
+.referral-progress strong{color:var(--gr700)}
+
+/* ── Toast ── */
+.toast{
+  position:fixed;bottom:calc(72px + var(--safe-b));left:20px;right:20px;
+  max-width:390px;margin:0 auto;
+  background:var(--gr900);color:var(--white);
+  padding:14px 18px;border-radius:var(--r-lg);
+  font-size:.75rem;font-weight:500;
+  box-shadow:0 8px 30px rgba(0,0,0,.15);
+  transform:translateY(100px);opacity:0;transition:all .35s cubic-bezier(.4,0,.2,1);
+  z-index:200;text-align:center;letter-spacing:-.01em;
+}
+.toast.show{transform:translateY(0);opacity:1}
+
+/* ── Focus ── */
+*:focus-visible{outline:2px solid var(--g500);outline-offset:2px}
+input:focus-visible{outline:none}
+
+/* ── Screens ── */
+.screen{position:fixed;inset:0;max-width:430px;margin:0 auto;z-index:300;transition:opacity .4s ease,transform .4s cubic-bezier(.4,0,.2,1)}
+.screen.hidden{opacity:0;pointer-events:none;transform:translateY(20px)}
+
+/* ── Entry screen ── */
+#entry-screen{
+  background:var(--white);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;padding:40px 28px;
+}
+.entry-logo-icon{
+  width:52px;height:52px;background:var(--g800);border-radius:14px;
+  display:flex;align-items:center;justify-content:center;
+  color:var(--white);font-size:1.2rem;font-weight:800;margin-bottom:16px;
+}
+.entry-title{font-size:1.5rem;font-weight:800;color:var(--gr900);margin-bottom:6px;letter-spacing:-.04em}
+.entry-sub{font-size:.82rem;color:var(--gr400);margin-bottom:36px;text-align:center;line-height:1.55}
+.entry-form{width:100%;max-width:340px}
+.entry-form .join-tabs{
+  display:flex;gap:0;margin-bottom:16px;
+  border:1.5px solid var(--gr200);border-radius:var(--r);overflow:hidden;
+  background:var(--gr50);padding:3px;
+}
+.join-tab{
+  flex:1;padding:9px;text-align:center;font-size:.7rem;font-weight:600;
+  background:transparent;color:var(--gr400);transition:all .2s;cursor:pointer;
+  border-radius:9px;border:none;
+}
+.join-tab.active{background:var(--white);color:var(--gr900);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.join-form{display:flex;flex-direction:column;gap:10px}
+.join-form input{
+  padding:13px 16px;border:1.5px solid var(--gr200);border-radius:var(--r);
+  font-size:.82rem;outline:none;transition:all .2s;font-family:var(--font);
+  color:var(--gr800);background:var(--white);
+}
+.join-form input::placeholder{color:var(--gr300)}
+.join-form input:focus{border-color:var(--g500);box-shadow:0 0 0 3px rgba(34,197,94,.1)}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;
+  padding:13px 20px;border-radius:var(--r);font-size:.82rem;font-weight:600;
+  transition:all .2s;letter-spacing:-.01em;
+}
+.btn-primary{background:var(--gr900);color:var(--white);width:100%}
+.btn-primary:hover{background:#000}
+.btn-primary:active{transform:scale(.98)}
+
+/* ── Welcome screen ── */
+#welcome-screen{
+  background:linear-gradient(180deg,var(--g950) 0%,var(--g900) 100%);
+  display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
+  padding:0 28px;text-align:center;overflow-y:auto;
+}
+.welcome-inner{margin:auto 0;padding:32px 0;width:100%;display:flex;flex-direction:column;align-items:center}
+.welcome-hall{font-size:.65rem;font-weight:600;color:var(--g400);text-transform:uppercase;letter-spacing:.12em;margin-bottom:10px}
+.welcome-name{font-size:1.4rem;font-weight:800;color:var(--white);margin-bottom:6px;letter-spacing:-.03em}
+.welcome-joined{font-size:.8rem;color:var(--g300);margin-bottom:28px;opacity:.8}
+.welcome-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;width:100%;max-width:280px;margin-bottom:32px}
+.welcome-stat{
+  background:rgba(255,255,255,.06);border-radius:var(--r-lg);padding:16px 12px;
+  border:1px solid rgba(255,255,255,.06);
+  backdrop-filter:blur(10px);
+}
+.welcome-stat-num{font-size:1.25rem;font-weight:800;color:var(--white);margin-bottom:2px;letter-spacing:-.02em}
+.welcome-stat-label{font-size:.6rem;color:var(--g300);font-weight:500;opacity:.7}
+.welcome-btn{
+  background:var(--white);color:var(--gr900);
+  padding:14px 48px;border-radius:50px;font-size:.82rem;font-weight:600;
+  transition:all .2s;letter-spacing:-.01em;
+}
+.welcome-btn:hover{background:var(--gr100)}
+.welcome-btn:active{transform:scale(.97)}
+
+/* Hide main app initially */
+#main-app{display:none}
+#main-app.visible{display:block}
+.bottom-nav.hidden-nav{display:none}
+
+/* ── Premium screen ── */
+#premium-screen{
+  background:rgba(0,0,0,.6);display:flex;align-items:flex-end;justify-content:center;
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  z-index:400;
+}
+.premium-sheet{
+  background:var(--white);border-radius:20px 20px 0 0;
+  width:100%;max-width:430px;padding:28px 24px calc(24px + var(--safe-b));
+  animation:slideUp .35s ease;
+}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.premium-sheet-handle{width:36px;height:4px;background:var(--gr200);border-radius:2px;margin:0 auto 20px}
+.premium-sheet-badge{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#FEF3C7,#FDE68A);padding:6px 12px;border-radius:50px;font-size:.62rem;font-weight:700;color:#92400E;margin-bottom:14px}
+.premium-sheet-title{font-size:1.15rem;font-weight:800;color:var(--gr900);margin-bottom:4px;letter-spacing:-.03em}
+.premium-sheet-price{font-size:.78rem;color:var(--gr500);margin-bottom:20px}
+.premium-sheet-price strong{color:var(--gr900);font-weight:700}
+.premium-features{list-style:none;margin-bottom:24px}
+.premium-features li{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--gr50);font-size:.75rem;color:var(--gr700)}
+.premium-features li:last-child{border-bottom:none}
+.premium-check{width:18px;height:18px;background:var(--g50);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.55rem;color:var(--g700)}
+.premium-cta{width:100%;padding:14px;border-radius:var(--r);background:var(--gr900);color:var(--white);font-size:.85rem;font-weight:600;margin-bottom:10px}
+.premium-cta:active{transform:scale(.98)}
+.premium-close{width:100%;padding:10px;font-size:.75rem;color:var(--gr400);text-align:center}
+
+/* ── Divider ── */
+.section-divider{height:1px;background:var(--gr100);margin:6px 20px 0}
+
+/* ── Confetti ── */
+.confetti-container{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:999;overflow:hidden}
+.confetti-piece{position:absolute;width:8px;height:8px;opacity:0;animation:confetti-fall 1.2s cubic-bezier(.25,.46,.45,.94) forwards}
+@keyframes confetti-fall{
+  0%{transform:translateY(0) rotate(0deg) scale(1);opacity:1}
+  100%{transform:translateY(110vh) rotate(720deg) scale(.3);opacity:0}
+}
+.confetti-piece:nth-child(odd){width:6px;height:10px;border-radius:1px}
+.confetti-piece:nth-child(even){border-radius:50%}
+</style>
+</head>
+<body>
+
+<!-- ══ ENTRY SCREEN ══ -->
+<div id="entry-screen" class="screen">
+  <div class="entry-logo-icon">BB</div>
+  <div class="entry-title">BlockBuy</div>
+  <div class="entry-sub">Wholesale prices for student halls.<br>Join your building to start saving.</div>
+  <div class="entry-form">
+    <div class="join-tabs" role="tablist">
+      <button class="join-tab active" role="tab" aria-selected="true" onclick="switchEntryTab(this,0)">Search by Address</button>
+      <button class="join-tab" role="tab" aria-selected="false" onclick="switchEntryTab(this,1)">Hall Code</button>
+    </div>
+    <div class="join-form" id="entry-form-0">
+      <input type="text" placeholder="Postcode, e.g. SE1 2TH" aria-label="Postcode" id="entry-postcode">
+      <input type="text" placeholder="Accommodation name" aria-label="Accommodation name" id="entry-accom">
+      <button class="btn btn-primary" onclick="handleJoin()">Find My Hall</button>
+    </div>
+    <div class="join-form" id="entry-form-1" style="display:none">
+      <input type="text" placeholder="Hall code, e.g. UBT-2024" aria-label="Hall code" id="entry-code">
+      <button class="btn btn-primary" onclick="handleJoin()">Join Hall</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ WELCOME SCREEN ══ -->
+<div id="welcome-screen" class="screen hidden">
+  <div class="welcome-inner">
+  <div class="welcome-hall">You've joined</div>
+  <div class="welcome-name">Urbanest Tower Bridge</div>
+  <div class="welcome-joined">38 students are already here</div>
+  <div class="welcome-stats">
+    <div class="welcome-stat">
+      <div class="welcome-stat-num">&pound;412</div>
+      <div class="welcome-stat-label">Saved this month</div>
+    </div>
+    <div class="welcome-stat">
+      <div class="welcome-stat-num">27</div>
+      <div class="welcome-stat-label">Cases completed</div>
+    </div>
+    <div class="welcome-stat">
+      <div class="welcome-stat-num">17%</div>
+      <div class="welcome-stat-label">Avg. off retail</div>
+    </div>
+    <div class="welcome-stat">
+      <div class="welcome-stat-num">8</div>
+      <div class="welcome-stat-label">Products this week</div>
+    </div>
+  </div>
+  <button class="welcome-btn" onclick="enterApp()">Start Shopping</button>
+  </div>
+</div>
+
+<!-- ══ PREMIUM SCREEN ══ -->
+<div id="premium-screen" class="screen hidden">
+  <div class="premium-sheet">
+    <div class="premium-sheet-handle"></div>
+    <div class="premium-sheet-badge">&#9733; Premium</div>
+    <div class="premium-sheet-title">BlockBuy Premium</div>
+    <div class="premium-sheet-price"><strong>&pound;5.99</strong>/month &middot; First month free</div>
+    <ul class="premium-features">
+      <li><span class="premium-check">&#10003;</span>Priority product votes — your votes count 2x</li>
+      <li><span class="premium-check">&#10003;</span>Flexible pick-up slots — choose your own time</li>
+      <li><span class="premium-check">&#10003;</span>Early access to new deals — 24h before everyone</li>
+      <li><span class="premium-check">&#10003;</span>Higher subscription limits — up to 20 units</li>
+      <li><span class="premium-check">&#10003;</span>No delivery fee on recurring subscriptions</li>
+    </ul>
+    <button class="premium-cta" onclick="activatePremium()">Start Free Trial</button>
+    <button class="premium-close" onclick="closePremium()">Maybe later</button>
+  </div>
+</div>
+
+<!-- ══ MAIN APP ══ -->
+<div id="main-app">
+
+<!-- Top bar -->
+<div class="top-bar">
+  <div class="logo" onclick="handleLogoTap()">
+    <div class="logo-icon">BB</div>
+    BlockBuy
+    <span class="live-badge" id="live-badge">LIVE</span>
+  </div>
+  <div class="top-bar-right">
+    <div class="top-hall">
+      <strong>Urbanest Tower Bridge</strong>
+      38 students active
+    </div>
+    <div class="avatar-dot">Z</div>
+  </div>
+</div>
+
+<!-- Savings banner -->
+<div class="savings-banner" id="savings-banner">
+  <div class="savings-title">Your hall this month</div>
+  <div class="savings-row">
+    <div>
+      <div class="savings-num" id="stat-saved">&pound;412</div>
+      <div class="savings-label">Saved</div>
+    </div>
+    <div>
+      <div class="savings-num" id="stat-cases">27</div>
+      <div class="savings-label">Cases</div>
+    </div>
+    <div>
+      <div class="savings-num">38</div>
+      <div class="savings-label">Students</div>
+    </div>
+    <div>
+      <div class="savings-num">17%</div>
+      <div class="savings-label">Avg. off</div>
+    </div>
+  </div>
+</div>
+
+<!-- Premium banner -->
+<div class="premium-banner" onclick="openPremium()">
+  <div class="premium-left">
+    <div class="premium-icon">&#9733;</div>
+    <div class="premium-text">BlockBuy Premium<span>Priority votes, flexible pickups &amp; more</span></div>
+  </div>
+  <div class="premium-arrow">&#8250;</div>
+</div>
+
+<!-- Activity feed -->
+<div class="activity-feed" id="activity-feed"></div>
+
+<!-- Countdown strip -->
+<div class="countdown-strip">
+  <div class="cd-card">
+    <div class="cd-dot amber"></div>
+    <div class="cd-info">
+      <div class="cd-label">Weekly cutoff</div>
+      <div class="cd-time" id="cutoff-timer">--d --h --m</div>
+    </div>
+  </div>
+  <div class="cd-card">
+    <div class="cd-dot green"></div>
+    <div class="cd-info">
+      <div class="cd-label">Pickup window</div>
+      <div class="cd-time" id="pickup-timer">Mon 4 – 8 PM</div>
+    </div>
+  </div>
+</div>
+
+<!-- Products -->
+<section class="section" id="products">
+  <div class="section-head">
+    <div class="section-title">This week's products</div>
+    <div class="section-sub">Cases fill by Sunday midnight. Unlocked cases ship Monday.</div>
+  </div>
+  <div class="filter-row">
+    <button class="filter-chip active" onclick="filterProducts('all',this)">All</button>
+    <button class="filter-chip" onclick="filterProducts('promoted',this)">Promoted</button>
+    <button class="filter-chip" onclick="filterProducts('unlocked',this)">Unlocked</button>
+    <button class="filter-chip" onclick="filterProducts('close',this)">Almost There</button>
+  </div>
+  <div class="product-grid" id="product-grid"></div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- Subscription -->
+<section class="section" id="subscribe">
+  <div class="section-head">
+    <div class="section-title">Recurring essentials</div>
+    <div class="section-sub">Auto-commit units each week. Cancel anytime.</div>
+  </div>
+  <div class="sub-list" id="sub-items"></div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- Referral -->
+<section class="section" id="referral-section">
+  <div class="section-head">
+    <div class="section-title">Invite your flatmates</div>
+    <div class="section-sub">More people = faster case fills = bigger savings.</div>
+  </div>
+  <div class="referral-card">
+    <div class="referral-title">Got a flatmate not on BlockBuy?</div>
+    <div class="referral-sub">Share your code — you both get free delivery on your next order</div>
+    <div class="referral-code-wrap">
+      <div class="referral-code">TOWER-Z4K9</div>
+      <button class="referral-copy" onclick="copyReferral()">Copy</button>
+    </div>
+    <button class="referral-share" onclick="shareReferral()">Share with flatmates</button>
+    <div class="referral-progress"><strong>2 of 5</strong> referrals — next reward at 5!</div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- Vote -->
+<section class="section" id="vote-section">
+  <div class="section-head">
+    <div class="section-title">What should we stock next?</div>
+    <div class="section-sub">Vote or suggest products.</div>
+  </div>
+  <div class="vote-list" id="vote-list"></div>
+  <div class="premium-upsell" id="vote-upsell" style="display:none">&#9733; Premium members get 2x voting power</div>
+  <div class="suggest-row">
+    <input type="text" placeholder="Suggest a product..." aria-label="Suggest a product" id="suggest-input">
+    <button onclick="suggestProduct()">Submit</button>
+  </div>
+</section>
+
+<div style="height:40px"></div>
+
+</div><!-- end #main-app -->
+
+<!-- Bottom nav -->
+<nav class="bottom-nav hidden-nav" id="bottom-nav" aria-label="Main navigation">
+  <a href="#products" class="nav-item active" onclick="setNav(this)">
+    <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z"/></svg></div>
+    Products
+  </a>
+  <a href="#savings-banner" class="nav-item" onclick="setNav(this)">
+    <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+    My Hall
+  </a>
+  <a href="#subscribe" class="nav-item" onclick="setNav(this)">
+    <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M17 3a2.83 2.83 0 11 4 4L7.5 20.5 2 22l1.5-5.5z"/></svg></div>
+    Subscribe
+  </a>
+  <a href="#vote-section" class="nav-item" onclick="setNav(this)">
+    <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M14 9V5a3 3 0 00-6 0v4"/><path d="M5 9h14l1 12H4L5 9z"/></svg></div>
+    Requests
+  </a>
+</nav>
+
+<!-- Toast -->
+<div class="toast" id="toast" role="alert" aria-live="polite">
+  <span id="toast-msg">Added!</span>
+</div>
+
+<script>
+/* ── Data ── */
+const products = [
+  {
+    id:1, name:"Coca-Cola 330ml", unit:"can", unitLabel:"330ml cans", caseSize:24, filled:21,
+    price:0.72, retail:0.85, promoted:true, casesCompleted:3,
+    image:"https://pngimg.com/uploads/cocacola/cocacola_PNG10.png",
+    alt:"Coca-Cola 330ml can"
+  },
+  {
+    id:2, name:"Red Bull 250ml", unit:"can", unitLabel:"250ml cans", caseSize:24, filled:15,
+    price:1.35, retail:1.65, promoted:true, casesCompleted:2,
+    image:"https://www.pngplay.com/wp-content/uploads/15/Red-Bull-Can-Transparent-File.png",
+    alt:"Red Bull 250ml energy drink can"
+  },
+  {
+    id:3, name:"Heinz Baked Beans", unit:"tin", unitLabel:"415g tins", caseSize:24, filled:24,
+    price:0.72, retail:0.85, promoted:false, casesCompleted:4,
+    image:"https://www.pngkey.com/png/detail/761-7612205_5000157024671-heinz-baked-beans.png",
+    alt:"Heinz Baked Beans tin"
+  },
+  {
+    id:4, name:"Penne Pasta 500g", unit:"bag", unitLabel:"500g bags", caseSize:12, filled:9,
+    price:0.82, retail:1.00, promoted:false, casesCompleted:1,
+    image:"https://digitalcontent.api.tesco.com/v2/media/ghs/58f96650-1c21-4009-b802-4e7184dccfaa/625fb287-a699-4fe5-a959-b9ada4937492_849012904.jpeg?h=960&w=960",
+    alt:"Penne Pasta 500g"
+  },
+  {
+    id:5, name:"Toilet Paper 4-roll", unit:"pack", unitLabel:"4-roll packs", caseSize:12, filled:4,
+    price:1.55, retail:1.85, promoted:false, casesCompleted:1,
+    image:"https://37.cdn.ekm.net/ekmps/shops/ab2451/images/softesse-3-ply-ultra-white-toilet-rolls-4-pack-1-22576-p.png?v=1972025-144710",
+    alt:"Toilet paper rolls"
+  },
+  {
+    id:6, name:"Crisps Variety", unit:"pack", unitLabel:"multipack bags", caseSize:24, filled:20,
+    price:0.55, retail:0.65, promoted:false, casesCompleted:2,
+    image:"https://pngimg.com/uploads/potato_chips/potato_chips_PNG42.png",
+    alt:"Bag of crisps"
+  },
+  {
+    id:7, name:"Basmati Rice 1kg", unit:"bag", unitLabel:"1kg bags", caseSize:12, filled:6,
+    price:1.49, retail:1.80, promoted:false, casesCompleted:0,
+    image:"https://pngimg.com/uploads/rice/rice_PNG98682.png",
+    alt:"Basmati rice"
+  },
+  {
+    id:8, name:"Laundry Detergent", unit:"box", unitLabel:"1kg boxes", caseSize:8, filled:2,
+    price:4.55, retail:5.50, promoted:false, casesCompleted:0,
+    image:"https://pngimg.com/uploads/washing_powder/washing_powder_PNG23.png",
+    alt:"Laundry detergent box"
+  }
+];
+
+const subscriptions = [
+  {id:1, productId:1, name:"Coca-Cola 330ml", qty:2, freq:"weekly", active:true},
+  {id:2, productId:5, name:"Toilet Paper 4-roll", qty:1, freq:"monthly", active:true},
+  {id:3, productId:3, name:"Heinz Baked Beans", qty:2, freq:"weekly", active:false},
+  {id:4, productId:7, name:"Basmati Rice 1kg", qty:1, freq:"monthly", active:false}
+];
+
+const voteItems = [
+  {id:1, name:"Fairy Liquid 500ml", sub:"Washing up liquid", votes:14, voted:false},
+  {id:2, name:"Kellogg's Corn Flakes", sub:"500g box", votes:11, voted:false},
+  {id:3, name:"Instant Noodles", sub:"Individual packs", votes:9, voted:false},
+  {id:4, name:"Bin Bags 50L (20-pack)", sub:"Household", votes:7, voted:false},
+  {id:5, name:"Yorkshire Tea 80 bags", sub:"Tea bags", votes:6, voted:false}
+];
+
+let currentFilter = "all";
+let isPremium = false;
+
+/* ── Demo simulation ── */
+const demoNames = ['Zainab','Kush','Seb','Yeejae','Mayya'];
+const activityLog = [];
+let demoMode = false;
+let demoInterval = null;
+let logoTapCount = 0;
+let logoTapTimer = null;
+let hallCasesTotal = 27;
+let hallSavedTotal = 412;
+
+function handleLogoTap() {
+  logoTapCount++;
+  clearTimeout(logoTapTimer);
+  logoTapTimer = setTimeout(() => { logoTapCount = 0; }, 800);
+  if (logoTapCount >= 3) {
+    logoTapCount = 0;
+    toggleDemo();
+  }
+}
+
+function toggleDemo() {
+  demoMode = !demoMode;
+  document.getElementById('live-badge').classList.toggle('show', demoMode);
+  if (demoMode) {
+    showToast('Demo mode activated');
+    scheduleDemoTick();
+  } else {
+    clearTimeout(demoInterval);
+    showToast('Demo mode off');
+  }
+}
+
+function scheduleDemoTick() {
+  if (!demoMode) return;
+  const delay = 2000 + Math.random() * 3000;
+  demoInterval = setTimeout(() => {
+    demoTick();
+    scheduleDemoTick();
+  }, delay);
+}
+
+function demoTick() {
+  const available = products.filter(p => p.filled < p.caseSize);
+  if (available.length === 0) return;
+
+  // Weight toward products closer to completion
+  const weights = available.map(p => 1 + (p.filled / p.caseSize) * 3);
+  const totalWeight = weights.reduce((a, b) => a + b, 0);
+  let r = Math.random() * totalWeight;
+  let chosen = available[0];
+  for (let i = 0; i < available.length; i++) {
+    r -= weights[i];
+    if (r <= 0) { chosen = available[i]; break; }
+  }
+
+  const name = demoNames[Math.floor(Math.random() * demoNames.length)];
+  demoAddUnit(chosen.id, name);
+}
+
+function demoAddUnit(id, personName) {
+  const p = products.find(x => x.id === id);
+  if (!p || p.filled >= p.caseSize) return;
+  p.filled++;
+  const pct = Math.min(100, Math.round((p.filled / p.caseSize) * 100));
+  const remaining = Math.max(0, p.caseSize - p.filled);
+  const isComplete = p.filled >= p.caseSize;
+
+  // Update UI
+  const countEl = document.getElementById("count-" + id);
+  if (countEl) countEl.textContent = p.filled + "/" + p.caseSize;
+
+  const barEl = document.getElementById("bar-" + id);
+  if (barEl) {
+    barEl.style.width = pct + "%";
+    barEl.className = "progress-fill " + (pct >= 100 ? "full" : pct >= 75 ? "high glow" : pct >= 40 ? "mid" : "low");
+  }
+
+  const statusEl = document.getElementById("status-" + id);
+  if (statusEl) {
+    if (isComplete) { statusEl.textContent = "Case complete!"; statusEl.className = "progress-status done"; }
+    else if (remaining <= 3) { statusEl.textContent = `${remaining} more to unlock!`; statusEl.className = "progress-status close"; }
+    else { statusEl.textContent = `${remaining} more needed`; statusEl.className = "progress-status needed"; }
+  }
+
+  const btnEl = document.getElementById("btn-" + id);
+  if (btnEl) {
+    if (isComplete) {
+      btnEl.textContent = "Case Filled";
+      btnEl.className = "btn-add filled";
+      btnEl.disabled = true;
+    } else if (remaining === 1) {
+      btnEl.textContent = "Add last " + p.unit + " — Case Closer!";
+      btnEl.className = "btn-add closer";
+    }
+  }
+
+  // Activity log
+  activityLog.unshift({ name: personName, product: p.name, unit: p.unit, time: Date.now() });
+  renderActivityFeed();
+
+  if (isComplete) {
+    showToast(`${personName} filled the ${p.name} case!`);
+    launchConfetti();
+    hallCasesTotal++;
+    hallSavedTotal += Math.round(p.caseSize * (p.retail - p.price));
+    updateSavingsBanner();
+    // Open new case of same product after delay
+    setTimeout(() => {
+      p.casesCompleted++;
+      p.filled = 0;
+      renderProducts();
+      showToast(`New case of ${p.name} opened — Case #${p.casesCompleted + 1}`);
+    }, 2000);
+  } else {
+    showToast(`${personName} added 1 ${p.unit} of ${p.name}`);
+  }
+}
+
+function updateSavingsBanner() {
+  document.getElementById('stat-saved').textContent = '£' + hallSavedTotal;
+  document.getElementById('stat-cases').textContent = hallCasesTotal;
+}
+
+/* ── Activity feed ── */
+function renderActivityFeed() {
+  const feed = document.getElementById('activity-feed');
+  const items = activityLog.slice(0, 8);
+  if (items.length === 0) {
+    feed.innerHTML = '';
+    return;
+  }
+  feed.innerHTML = items.map(a => {
+    const ago = getTimeAgo(a.time);
+    return `<div class="activity-card">
+      <div class="activity-avatar">${a.name[0]}</div>
+      <div class="activity-text"><strong>${a.name}</strong> added 1x ${a.product}</div>
+      <div class="activity-time">${ago}</div>
+    </div>`;
+  }).join('');
+}
+
+function getTimeAgo(ts) {
+  const diff = Math.floor((Date.now() - ts) / 1000);
+  if (diff < 5) return 'just now';
+  if (diff < 60) return diff + 's ago';
+  if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
+  return Math.floor(diff / 3600) + 'h ago';
+}
+
+/* ── Render products ── */
+function renderProducts() {
+  const grid = document.getElementById("product-grid");
+  let sorted = [...products].sort((a,b) => {
+    if (a.promoted !== b.promoted) return b.promoted - a.promoted;
+    const aFull = a.filled >= a.caseSize;
+    const bFull = b.filled >= b.caseSize;
+    if (aFull !== bFull) return bFull - aFull;
+    return (b.filled/b.caseSize) - (a.filled/a.caseSize);
+  });
+
+  if (currentFilter === "promoted") sorted = sorted.filter(p => p.promoted);
+  else if (currentFilter === "unlocked") sorted = sorted.filter(p => p.filled >= p.caseSize);
+  else if (currentFilter === "close") sorted = sorted.filter(p => p.filled/p.caseSize >= 0.75 && p.filled < p.caseSize);
+
+  if (sorted.length === 0) {
+    grid.innerHTML = `<div class="empty-state">
+      <div class="empty-state-icon">📦</div>
+      <div class="empty-state-text">No products match this filter yet</div>
+      <button class="empty-state-btn" onclick="filterProducts('all',document.querySelector('.filter-chip'))">Browse all products</button>
+    </div>`;
+    return;
+  }
+
+  grid.innerHTML = sorted.map(p => {
+    const pct = Math.min(100, Math.round((p.filled / p.caseSize) * 100));
+    const remaining = Math.max(0, p.caseSize - p.filled);
+    const isUnlocked = p.filled >= p.caseSize;
+    const savePct = Math.round((1 - p.price / p.retail) * 100);
+    let fillClass = "low";
+    if (pct >= 100) fillClass = "full";
+    else if (pct >= 75) fillClass = "high glow";
+    else if (pct >= 40) fillClass = "mid";
+
+    let statusText, statusClass;
+    if (isUnlocked) { statusText = "Case complete!"; statusClass = "done"; }
+    else if (remaining <= 3) { statusText = `${remaining} more to unlock!`; statusClass = "close"; }
+    else { statusText = `${remaining} more needed`; statusClass = "needed"; }
+
+    const isLastUnit = remaining === 1;
+    let btnClass, btnText;
+    if (isUnlocked) { btnClass = "filled"; btnText = "Case Filled"; }
+    else if (isLastUnit) { btnClass = "closer"; btnText = "Add last " + p.unit + " — Case Closer!"; }
+    else { btnClass = "active"; btnText = "+ Add 1 " + p.unit; }
+
+    const cardClass = `product-card${isUnlocked ? " unlocked" : ""}${p.promoted ? " promoted" : ""}`;
+    const caseNum = p.casesCompleted > 0 ? `<div class="case-number">Case #${p.casesCompleted + 1} · ${p.casesCompleted} filled</div>` : '';
+
+    return `
+      <article class="${cardClass}" data-id="${p.id}">
+        ${p.promoted ? '<span class="badge badge-promoted">Promoted</span>' : ''}
+        ${isUnlocked ? '<span class="badge badge-unlocked">Unlocked</span>' : ''}
+        <div class="product-img-wrap" id="img-wrap-${p.id}">
+          <img src="${p.image}" alt="${p.alt}" loading="lazy"
+               onerror="this.onerror=null;this.closest('.product-img-wrap').classList.add('img-error');">
+          <div class="img-fallback" aria-hidden="true">${p.name}</div>
+        </div>
+        <div class="product-info">
+          <div class="product-name">${p.name}</div>
+          <div class="product-unit">${p.unitLabel} · Case of ${p.caseSize}</div>
+          <div class="product-pricing">
+            <span class="price-now">£${p.price.toFixed(2)}</span>
+            <span class="price-was">£${p.retail.toFixed(2)}</span>
+            <span class="price-save">${savePct}% off</span>
+          </div>
+          <div class="progress-section">
+            ${caseNum}
+            <div class="progress-header">
+              <span class="progress-label">Case fill</span>
+              <span class="progress-count" id="count-${p.id}">${p.filled}/${p.caseSize}</span>
+            </div>
+            <div class="progress-track"><div class="progress-fill ${fillClass}" id="bar-${p.id}" style="width:${pct}%"></div></div>
+            <div class="progress-status ${statusClass}" id="status-${p.id}">${statusText}</div>
+            <button class="btn-add ${btnClass}" id="btn-${p.id}"
+                    onclick="addUnit(${p.id})" ${isUnlocked ? 'disabled' : ''}
+                    aria-label="Add one ${p.unit} of ${p.name}">
+              ${btnText}
+            </button>
+          </div>
+        </div>
+      </article>
+    `;
+  }).join("");
+}
+
+/* ── Add unit (user action) ── */
+function addUnit(id) {
+  const p = products.find(x => x.id === id);
+  if (!p || p.filled >= p.caseSize) return;
+  p.filled++;
+  const pct = Math.min(100, Math.round((p.filled / p.caseSize) * 100));
+  const remaining = Math.max(0, p.caseSize - p.filled);
+  const isUnlocked = p.filled >= p.caseSize;
+
+  const countEl = document.getElementById("count-" + id);
+  if (countEl) countEl.textContent = p.filled + "/" + p.caseSize;
+
+  const barEl = document.getElementById("bar-" + id);
+  if (barEl) {
+    barEl.style.width = pct + "%";
+    barEl.className = "progress-fill " + (pct >= 100 ? "full" : pct >= 75 ? "high glow" : pct >= 40 ? "mid" : "low");
+  }
+
+  const statusEl = document.getElementById("status-" + id);
+  if (statusEl) {
+    if (isUnlocked) { statusEl.textContent = "Case complete!"; statusEl.className = "progress-status done"; }
+    else if (remaining <= 3) { statusEl.textContent = `${remaining} more to unlock!`; statusEl.className = "progress-status close"; }
+    else { statusEl.textContent = `${remaining} more needed`; statusEl.className = "progress-status needed"; }
+  }
+
+  const btnEl = document.getElementById("btn-" + id);
+  if (btnEl) {
+    if (isUnlocked) {
+      btnEl.textContent = "Case Filled";
+      btnEl.className = "btn-add filled";
+      btnEl.disabled = true;
+    } else if (remaining === 1) {
+      btnEl.textContent = "Add last " + p.unit + " — Case Closer!";
+      btnEl.className = "btn-add closer";
+    }
+  }
+
+  // Activity log
+  activityLog.unshift({ name: 'You', product: p.name, unit: p.unit, time: Date.now() });
+  renderActivityFeed();
+
+  if (isUnlocked) {
+    showToast(`${p.name} case unlocked!`);
+    launchConfetti();
+    hallCasesTotal++;
+    hallSavedTotal += Math.round(p.caseSize * (p.retail - p.price));
+    updateSavingsBanner();
+    // Open new case after delay
+    setTimeout(() => {
+      p.casesCompleted++;
+      p.filled = 0;
+      renderProducts();
+      showToast(`New case of ${p.name} opened — Case #${p.casesCompleted + 1}`);
+    }, 2000);
+  } else {
+    showToast(`Added 1 ${p.unit} of ${p.name} (${remaining} left)`);
+  }
+}
+
+/* ── Confetti ── */
+function launchConfetti() {
+  const colors = ['#22C55E','#16A34A','#4ADE80','#86EFAC','#FCD34D','#F59E0B','#fff'];
+  const container = document.createElement('div');
+  container.className = 'confetti-container';
+  document.body.appendChild(container);
+
+  for (let i = 0; i < 50; i++) {
+    const piece = document.createElement('div');
+    piece.className = 'confetti-piece';
+    piece.style.left = Math.random() * 100 + '%';
+    piece.style.top = '-10px';
+    piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+    piece.style.animationDelay = (Math.random() * 0.5) + 's';
+    piece.style.animationDuration = (0.8 + Math.random() * 0.8) + 's';
+    const size = 4 + Math.random() * 6;
+    piece.style.width = size + 'px';
+    piece.style.height = size * (0.6 + Math.random() * 0.8) + 'px';
+    container.appendChild(piece);
+  }
+
+  setTimeout(() => container.remove(), 2500);
+}
+
+/* ── Filter ── */
+function filterProducts(filter, el) {
+  currentFilter = filter;
+  document.querySelectorAll(".filter-chip").forEach(t => t.classList.remove("active"));
+  el.classList.add("active");
+  renderProducts();
+}
+
+/* ── Subscription ── */
+function renderSubscriptions() {
+  const container = document.getElementById("sub-items");
+  container.innerHTML = subscriptions.map(s => `
+    <div class="sub-item ${s.active ? 'active' : ''}" id="sub-${s.id}">
+      <div class="sub-item-top">
+        <span class="sub-item-name">${s.name}</span>
+        <div class="sub-toggle ${s.active ? 'on' : ''}" id="toggle-${s.id}"
+             onclick="toggleSub(${s.id})" role="switch" aria-checked="${s.active}"
+             tabindex="0" aria-label="Toggle subscription for ${s.name}"
+             onkeydown="if(event.key===' '||event.key==='Enter'){event.preventDefault();toggleSub(${s.id})}">
+          <div class="sub-toggle-knob"></div>
+        </div>
+      </div>
+      <div class="sub-item-config">
+        <div class="sub-qty">
+          <button onclick="changeSubQty(${s.id},-1)" aria-label="Decrease quantity">-</button>
+          <span id="sub-qty-${s.id}">${s.qty}</span>
+          <button onclick="changeSubQty(${s.id},1)" aria-label="Increase quantity">+</button>
+        </div>
+        <select class="sub-freq" id="sub-freq-${s.id}" onchange="changeSubFreq(${s.id},this.value)" aria-label="Frequency">
+          <option value="weekly" ${s.freq==='weekly'?'selected':''}>Every week</option>
+          <option value="fortnightly" ${s.freq==='fortnightly'?'selected':''}>Every 2 weeks</option>
+          <option value="monthly" ${s.freq==='monthly'?'selected':''}>Every month</option>
+        </select>
+      </div>
+      <div class="sub-note">${s.active ? 'Auto-commits ' + s.qty + ' unit' + (s.qty>1?'s':'') + ' ' + s.freq + ' toward case fill' : 'Enable to auto-commit units'}</div>
+    </div>
+  `).join("");
+}
+
+function toggleSub(id) {
+  const s = subscriptions.find(x => x.id === id);
+  if (!s) return;
+  s.active = !s.active;
+  renderSubscriptions();
+  showToast(s.active ? `Subscribed to ${s.name}` : `Unsubscribed from ${s.name}`);
+}
+
+function changeSubQty(id, delta) {
+  const s = subscriptions.find(x => x.id === id);
+  if (!s) return;
+  s.qty = Math.max(1, Math.min(10, s.qty + delta));
+  document.getElementById("sub-qty-" + id).textContent = s.qty;
+  const noteEl = document.querySelector("#sub-" + id + " .sub-note");
+  if (noteEl && s.active) noteEl.textContent = "Auto-commits " + s.qty + " unit" + (s.qty>1?"s":"") + " " + s.freq + " toward case fill";
+}
+
+function changeSubFreq(id, freq) {
+  const s = subscriptions.find(x => x.id === id);
+  if (!s) return;
+  s.freq = freq;
+  const noteEl = document.querySelector("#sub-" + id + " .sub-note");
+  if (noteEl && s.active) noteEl.textContent = "Auto-commits " + s.qty + " unit" + (s.qty>1?"s":"") + " " + s.freq + " toward case fill";
+}
+
+/* ── Vote ── */
+function renderVotes() {
+  const list = document.getElementById("vote-list");
+  list.innerHTML = voteItems.sort((a,b) => b.votes - a.votes).map(v => `
+    <div class="vote-item" id="vote-${v.id}">
+      <div class="vote-item-left">
+        <span class="vote-count">${v.votes}</span>
+        <div>
+          <div class="vote-item-name">${v.name}</div>
+          <div class="vote-item-sub">${v.sub}</div>
+        </div>
+      </div>
+      <button class="btn-vote ${v.voted ? 'voted' : ''}" onclick="castVote(${v.id})"
+              aria-label="Vote for ${v.name}">
+        ${v.voted ? 'Voted' : 'Vote'}
+      </button>
+    </div>
+  `).join("");
+  document.getElementById('vote-upsell').style.display = isPremium ? 'none' : 'block';
+}
+
+function castVote(id) {
+  const v = voteItems.find(x => x.id === id);
+  if (!v) return;
+  const power = isPremium ? 2 : 1;
+  if (v.voted) { v.votes -= power; v.voted = false; }
+  else { v.votes += power; v.voted = true; }
+  renderVotes();
+}
+
+function suggestProduct() {
+  const input = document.getElementById("suggest-input");
+  const val = input.value.trim();
+  if (!val) return;
+  voteItems.push({id: Date.now(), name: val, sub:"Suggested by you", votes:1, voted:true});
+  input.value = "";
+  renderVotes();
+  showToast("Suggestion submitted: " + val);
+}
+
+/* ── Premium ── */
+function openPremium() {
+  document.getElementById('premium-screen').classList.remove('hidden');
+}
+
+function closePremium() {
+  document.getElementById('premium-screen').classList.add('hidden');
+}
+
+function activatePremium() {
+  isPremium = true;
+  closePremium();
+  showToast('Welcome to BlockBuy Premium!');
+  renderVotes();
+}
+
+/* ── Referral ── */
+function copyReferral() {
+  navigator.clipboard.writeText('TOWER-Z4K9').then(() => {
+    showToast('Referral code copied!');
+  }).catch(() => {
+    showToast('TOWER-Z4K9');
+  });
+}
+
+function shareReferral() {
+  const shareData = {
+    title: 'Join BlockBuy',
+    text: "Join me on BlockBuy! We're saving 17% on groceries at Urbanest Tower Bridge. Use my code TOWER-Z4K9 to sign up.",
+    url: window.location.href
+  };
+  if (navigator.share) {
+    navigator.share(shareData).catch(() => {});
+  } else {
+    copyReferral();
+  }
+}
+
+/* ── Entry screen ── */
+function switchEntryTab(el, idx) {
+  el.closest('.join-tabs').querySelectorAll('.join-tab').forEach(t => { t.classList.remove("active"); t.setAttribute("aria-selected","false"); });
+  el.classList.add("active");
+  el.setAttribute("aria-selected","true");
+  document.getElementById("entry-form-0").style.display = idx === 0 ? "flex" : "none";
+  document.getElementById("entry-form-1").style.display = idx === 1 ? "flex" : "none";
+}
+
+function handleJoin() {
+  document.getElementById("entry-screen").classList.add("hidden");
+  setTimeout(() => {
+    document.getElementById("welcome-screen").classList.remove("hidden");
+  }, 400);
+}
+
+function enterApp() {
+  document.getElementById("welcome-screen").classList.add("hidden");
+  setTimeout(() => {
+    document.getElementById("main-app").classList.add("visible");
+    document.getElementById("bottom-nav").classList.remove("hidden-nav");
+    document.body.style.overflow = "";
+  }, 400);
+}
+
+/* ── Bottom nav ── */
+function setNav(el) {
+  document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
+  el.classList.add("active");
+}
+
+/* ── Countdown ── */
+function getNextSunday() {
+  const now = new Date();
+  const day = now.getDay();
+  const diff = day === 0 ? 0 : 7 - day;
+  const next = new Date(now);
+  next.setDate(now.getDate() + diff);
+  next.setHours(23, 59, 59, 999);
+  if (next <= now) next.setDate(next.getDate() + 7);
+  return next;
+}
+
+function getNextPickup() {
+  const sun = getNextSunday();
+  const mon = new Date(sun);
+  mon.setDate(sun.getDate() + 1);
+  mon.setHours(16, 0, 0, 0);
+  return mon;
+}
+
+function updateCountdown() {
+  const now = new Date();
+  const cutoff = getNextSunday();
+  const pickup = getNextPickup();
+
+  const diffC = Math.max(0, cutoff - now);
+  const dC = Math.floor(diffC / 86400000);
+  const hC = Math.floor((diffC % 86400000) / 3600000);
+  const mC = Math.floor((diffC % 3600000) / 60000);
+  const sC = Math.floor((diffC % 60000) / 1000);
+  document.getElementById("cutoff-timer").textContent =
+    `${dC}d ${String(hC).padStart(2,"0")}h ${String(mC).padStart(2,"0")}m ${String(sC).padStart(2,"0")}s`;
+
+  const days = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+  const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  document.getElementById("pickup-timer").textContent =
+    `${days[pickup.getDay()]} ${pickup.getDate()} ${months[pickup.getMonth()]}, 4-8 PM`;
+}
+
+/* ── Toast ── */
+let toastTimeout;
+function showToast(msg) {
+  const toast = document.getElementById("toast");
+  document.getElementById("toast-msg").textContent = msg;
+  toast.classList.add("show");
+  clearTimeout(toastTimeout);
+  toastTimeout = setTimeout(() => toast.classList.remove("show"), 2800);
+}
+
+/* ── Init ── */
+renderProducts();
+renderSubscriptions();
+renderVotes();
+updateCountdown();
+setInterval(updateCountdown, 1000);
+</script>
+</body>
+</html>
